@@ -1,0 +1,15 @@
+[
+  {
+    "modid": "${mod_id}",
+    "name": "${mod_name}",
+    "description": "Client-side fixes for 1.12.2 keyboard and audio quirks, mostly on macOS: Ctrl+Q drops the stack, sound follows the current output device, Cmd+Q asks before quitting, no stuck keys after Cmd+Tab. Requires FermiumBooter.",
+    "version": "${version}",
+    "mcversion": "1.12.2",
+    "url": "https://github.com/tidefox/macos-quirks",
+    "authorList": ["tidefox"],
+    "credits": "",
+    "logoFile": "",
+    "screenshots": [],
+    "dependencies": []
+  }
+]

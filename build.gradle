@@ -1,0 +1,112 @@
+plugins {
+    id 'java'
+    id 'com.gtnewhorizons.retrofuturagradle' version '2.0.3'
+}
+
+version = project.mod_version
+group = 'io.github.tidefox.clientquirks'
+
+base {
+    archivesName.set(project.mod_id)
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(8))
+    }
+}
+
+minecraft {
+    mcVersion.set('1.12.2')
+    mcpMappingChannel.set(project.mapping_channel)
+    mcpMappingVersion.set(project.mapping_version)
+    username.set('Developer')
+    // All run tasks: verify mixin bytecode and fail loudly on missed injections.
+    extraRunJvmArguments.addAll('-Dmixin.debug.verify=true', '-Dmixin.debug.countInjections=true')
+    injectedTags.put('VERSION', project.version.toString())
+    injectedTags.put('MOD_ID', project.mod_id)
+    injectedTags.put('MOD_NAME', project.mod_name)
+}
+
+// Dev (deobfuscated) runs load our coremod from the classpath. Only for these: in the
+// obfuscated runs the jar sits in mods/, and a failed early lookup would be cached.
+['runClient', 'runServer'].each { name ->
+    tasks.named(name).configure {
+        jvmArgs('-Dfml.coreMods.load=io.github.tidefox.clientquirks.core.CQLoadingPlugin')
+    }
+}
+
+// CI: `-Pselftest` makes the client reload its sound system on the main menu and quit.
+if (project.hasProperty('selftest')) {
+    ['runClient', 'runObfClient'].each { name ->
+        tasks.named(name).configure { jvmArgs('-Dclientquirks.selftest=true') }
+    }
+}
+
+tasks.named('injectTags').configure {
+    outputClassName.set('io.github.tidefox.clientquirks.Tags')
+}
+
+repositories {
+    maven {
+        name = 'CleanroomMC'
+        url = 'https://maven.cleanroommc.com'
+        content {
+            includeGroup 'zone.rong'
+            includeGroup 'com.cleanroommc'
+        }
+    }
+    maven {
+        name = 'CurseMaven'
+        url = 'https://www.cursemaven.com'
+        content { includeGroup 'curse.maven' }
+    }
+    mavenCentral()
+}
+
+dependencies {
+    // Mixin annotations + AP; RFG wires the reobf SRG mappings into the AP and
+    // writes the refmap under the given name.
+    String mixinDep = modUtils.enableMixins(project.mixin_ap_artifact, 'mixins.clientquirks.refmap.json')
+    compileOnly(mixinDep) { transitive = false }
+    annotationProcessor mixinDep
+
+    // FermiumBooter API (FermiumRegistryAPI). Provided by the game at runtime.
+    compileOnly "curse.maven:fermiumbooter-${project.fermium_project_id}:${project.fermium_file_id}"
+
+    // runObfClient / runObfServer (production-like runs): FermiumBooter goes in the mods folder.
+    obfuscatedRuntimeClasspath "curse.maven:fermiumbooter-${project.fermium_project_id}:${project.fermium_file_id}"
+    // runClient (dev): FermiumBooter's coremod is found on the classpath.
+    runtimeOnly "curse.maven:fermiumbooter-${project.fermium_project_id}:${project.fermium_file_id}"
+
+    testImplementation platform('org.junit:junit-bom:5.10.2')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events 'failed'
+        exceptionFormat 'full'
+    }
+}
+
+processResources {
+    inputs.property 'version', project.version
+    filesMatching('mcmod.info') {
+        expand('version': project.version, 'mod_id': project.mod_id, 'mod_name': project.mod_name)
+    }
+}
+
+jar {
+    manifest {
+        attributes(
+            'FMLCorePlugin': 'io.github.tidefox.clientquirks.core.CQLoadingPlugin',
+            'FMLCorePluginContainsFMLMod': 'true',
+            'ForceLoadAsMod': 'true',
+            'Implementation-Title': project.mod_name,
+            'Implementation-Version': project.version
+        )
+    }
+}

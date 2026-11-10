@@ -1,0 +1,26 @@
+key.categories.clientquirks=Client Quirks
+key.clientquirks.reloadSound=Reload sound device
+
+clientquirks.audio.button=Reload sound device
+clientquirks.audio.reloaded=Sound device reloaded
+clientquirks.audio.reloaded.manual=Using the current output device
+clientquirks.audio.reloaded.auto=Followed the new output device
+
+clientquirks.quit.title=Quit Minecraft?
+clientquirks.quit.singleplayer=Your world will be saved before quitting.
+clientquirks.quit.multiplayer=You will be disconnected from the server.
+clientquirks.quit.yes=Quit Game
+
+clientquirks.config.title=Client Quirks
+clientquirks.config.drop=Drop whole stack
+clientquirks.config.drop.physicalCtrl=Ctrl+Q drops stack (macOS)
+clientquirks.config.audio=Sound device
+clientquirks.config.audio.button=Button on Music & Sounds
+clientquirks.config.audio.autoSwitch=Follow default output device
+clientquirks.config.audio.toast=Show toast on reload
+clientquirks.config.audio.debug=Debug logging
+clientquirks.config.quit=Quit confirmation
+clientquirks.config.quit.confirm=Confirm Cmd+Q in a world (macOS)
+clientquirks.config.quit.confirmEverywhere=Also on Windows/Linux
+clientquirks.config.focus=Stuck keys
+clientquirks.config.focus.resyncKeys=Release stuck keys on focus

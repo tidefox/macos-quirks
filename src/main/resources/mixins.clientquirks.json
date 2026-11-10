@@ -1,0 +1,18 @@
+{
+  "required": false,
+  "minVersion": "0.8",
+  "package": "io.github.tidefox.clientquirks.mixin",
+  "plugin": "io.github.tidefox.clientquirks.mixinsupport.CQMixinPlugin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "mixins.clientquirks.refmap.json",
+  "injectors": {
+    "defaultRequire": 0
+  },
+  "client": [
+    "MixinMinecraft",
+    "MixinGuiContainer",
+    "MixinKeyBinding",
+    "SoundHandlerAccessor",
+    "SoundManagerAccessor"
+  ]
+}
